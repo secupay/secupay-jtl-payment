@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding="ISO-8859-1"?>
 <jtlshop3plugin>
-	<Name>Secupay AG Zahlungsmethoden</Name>
-	<Description>Implementiert die Zahlungsmethoden -- Lastschrift, Kreditkarte und Rechnungskauf -- der secupay AG via FlexAPI</Description>
-	<Author>ag-websolutions.de im Auftrag und unter Lizenz der secupay AG</Author>
-	<URL>https://www.secupay.com</URL>
+	<Name>secupay AG Zahlungsmethoden</Name>
+	<Description>Implementiert die Zahlungsmethoden Lastschrift, SOFORT-Überweisung, Kreditkarte, Rechnungskauf und Vorkasse der secupay AG via flex.API</Description>
+	<Author>secupay AG</Author>
+	<URL>https://secupay.com/</URL>
 	<XMLVersion>102</XMLVersion>
 	<ShopVersion>319</ShopVersion>
 	<Shop4Version>402</Shop4Version>
@@ -65,6 +65,9 @@
 		<Version nr="407">
 			<CreateDate>2018-02-04</CreateDate>
 		</Version>
+		<Version nr="408">
+			<CreateDate>2018-11-07</CreateDate>
+		</Version>
 		<Hooks>
             <Hook id="19">agws_secupay_flex_hooks19.php</Hook>
 			<Hook id="140">agws_secupay_flex_hooks140.php</Hook>
@@ -85,18 +88,18 @@
 					<ValueName>agws_secupay_flex_global_headline</ValueName>
 				</Setting>			
 				<Setting type="text" initialValue="{%SPAPIKEY%}" sort="1" conf="Y">    
-					<Name>secupay API-Key:</Name>
-					<Description>Ihr secupay API-Key</Description>
+					<Name>secupay API.key:</Name>
+					<Description>Ihr secupay API.key</Description>
 					<ValueName>agws_secupay_flex_global_vertragsid</ValueName>
 				</Setting>	
 				<Setting type="text" initialValue="" sort="2" conf="Y">    
-					<Name>Alternativer Shop-Name:</Name>
-					<Description>Alternativer Shop-Name (max. 48 Zeichen), sofern der eigentliche Shop-Name mehr Zeichen umfasst, da diese ansonsten bei Verwendungszweck-Angaben abgeschnitten werden</Description>
+					<Name>Alternativer Shopname:</Name>
+					<Description>Alternativer Shopname (max. 48 Zeichen), sofern der eigentliche Shopname mehr Zeichen umfasst, da diese ansonsten bei Verwendungszweck-Angaben abgeschnitten werden.</Description>
 					<ValueName>agws_secupay_flex_global_shopname</ValueName>
 				</Setting>	
 				<Setting type="selectbox" initialValue="1" sort="3" conf="Y"> 
-					<Name>Verhalten bei abweich. Lieferanschrift:</Name>
-					<Description>Soll dem Kunden bei Nutzung einer abweichenden Lieferanschrift der Hinweis angezeigt werden, dass nur an die Rechnungsanschrift geliefert wird? - Betrifft NUR die Vertragsvariante Garantie - Bitte beachten Sie zu diesem Punkt die Vertragsbedingungen mit der secupay.ag für die Zahlungsgarantie.</Description>
+					<Name>Verhalten bei abweichender Lieferanschrift:</Name>
+					<Description>Soll dem Kunden bei Nutzung einer abweichenden Lieferanschrift ein Hinweis angezeigt werden, dass nur an die Rechnungsanschrift geliefert wird? (Betrifft NUR die Vertragsvariante mit Garantie. Bitte beachten Sie zu diesem Punkt die Vertragsbedingungen mit der secupay AG für die Zahlungsgarantie.)</Description>
 					<ValueName>agws_secupay_flex_global_hinweisflag</ValueName>
 					<SelectboxOptions>
 						<Option value = "1" sort="1">Zahlungsart anbieten mit Hinweis</Option>
@@ -116,11 +119,11 @@
 				</Setting>	
 				<Setting type="selectbox" initialValue="1" sort="6" conf="Y">    
 					<Name>API-URL:</Name>
-					<Description>Main-URL der secupay-API</Description>
+					<Description>Zielserver der secupay-API</Description>
 					<ValueName>agws_secupay_flex_global_apiurl</ValueName>
 					<SelectboxOptions>
-						<Option value = "1" sort="1">Live System</Option>
-						<!-- Option value = "2" sort="2">Dist System</Option -->
+						<Option value = "1" sort="1">Live-System</Option>
+						<!-- Option value = "2" sort="2">Dist-System</Option -->
 					</SelectboxOptions>
 				</Setting>
 				<Setting type="selectbox" initialValue="1" sort="7" conf="Y"> 
@@ -144,9 +147,9 @@
 			<Method>
 				<Name>secupay-credit</Name>
 				<PictureURL>secupay-kk/template/secupay_creditcard.png</PictureURL>
-				<Sort>4</Sort>
+				<Sort>1</Sort>
 				<SendMail>1</SendMail>
-				<Provider>secupay.ag</Provider>
+				<Provider>secupay AG</Provider>
 				<TSCode>CREDIT_CARD</TSCode>
 				<PreOrder>1</PreOrder>
 				<Soap>0</Soap>
@@ -156,19 +159,33 @@
 				<ClassName>agws_secupay_flex_kk</ClassName>
 				<TemplateFile>secupay-kk/template/agws_secupay_flex_kk.tpl</TemplateFile>
 				<MethodLanguage iso="GER">
-					<Name>secupay.Kreditkartenzahlung</Name>
-					<ChargeName>Gebühr (Zahlungsart secupay-Kreditkarte)</ChargeName>
-					<InfoText>Sie zahlen einfach und sicher mit Ihrer Kreditkarte</InfoText>
+                    <Name>secupay.Kreditkartenzahlung</Name>
+                    <ChargeName>Aufpreis für Zahlung mit secupay-Kreditkarte</ChargeName>
+                    <InfoText>Sie zahlen einfach und sicher mit Ihrer Kreditkarte.</InfoText>
+                </MethodLanguage>
+                <MethodLanguage iso="ENG">
+					<Name>secupay.creditcard</Name>
+					<ChargeName>Charge for secupay credit card payment</ChargeName>
+					<InfoText>Pay easily and securely with your credit card.</InfoText>
 				</MethodLanguage>
+                <Setting type="selectbox" initialValue="2" sort="8" conf="Y">
+                    <Name>Auswahl Feld Zahlungsdaten</Name>
+                    <Description>Darstellungsoption für Zahlungsdaten in der Wawi Kommentar/Hinweisfeld oder Rechnungsdruck</Description>
+                    <ValueName>agws_secupay_flex_kk_comment</ValueName>
+                    <SelectboxOptions>
+                        <Option value = "1" sort="1">Kommentar/Hinweisfeld</Option>
+                        <Option value = "2" sort="2">Kreditkarte-Text</Option>
+                    </SelectboxOptions>
+                </Setting>
 			</Method>
-			
+
 			<Method>
 				<Name>secupay-debit</Name>
 				<PictureURL>secupay-ls/template/secupay_debit.png</PictureURL>
-				<Sort>5</Sort>
+				<Sort>2</Sort>
 				<SendMail>1</SendMail>
-				<Provider>secupay.ag</Provider>
-				<TSCode>DIRECT_DEBIT</TSCode>
+				<Provider>secupay AG</Provider>
+                <TSCode>DIRECT_DEBIT</TSCode>
 				<PreOrder>1</PreOrder>
 				<Soap>0</Soap>
 				<Curl>1</Curl>
@@ -177,19 +194,33 @@
 				<ClassName>agws_secupay_flex_ls</ClassName>
 				<TemplateFile>secupay-ls/template/agws_secupay_flex_ls.tpl</TemplateFile>
 				<MethodLanguage iso="GER">
-					<Name>secupay.Lastschriftzahlung</Name>
-					<ChargeName>Gebühr (Zahlungsart secupay-Lastschriftzahlung)</ChargeName>
-					<InfoText>Sie zahlen bequem per Bankeinzug</InfoText>
+                    <Name>secupay.Lastschriftzahlung</Name>
+                    <ChargeName>Aufpreis für Zahlung mit secupay-Lastschriftzahlung</ChargeName>
+                    <InfoText>Sie zahlen bequem per Bankeinzug.</InfoText>
+                </MethodLanguage>
+                <MethodLanguage iso="ENG">
+					<Name>secupay.directdebit</Name>
+					<ChargeName>Charge for secupay debit</ChargeName>
+					<InfoText>You pay comfortably with debit.</InfoText>
 				</MethodLanguage>
+                <Setting type="selectbox" initialValue="2" sort="8" conf="Y">
+                    <Name>Auswahl Feld Zahlungsdaten</Name>
+                    <Description>Darstellungsoption für Zahlungsdaten in der Wawi Kommentar/Hinweisfeld oder Rechnungsdruck</Description>
+                    <ValueName>agws_secupay_flex_ls_comment</ValueName>
+                    <SelectboxOptions>
+                        <Option value = "1" sort="1">Kommentar/Hinweisfeld</Option>
+                        <Option value = "2" sort="2">Lastschrift-Text</Option>
+                    </SelectboxOptions>
+                </Setting>
 			</Method>
-			
+
 			<Method>
 				<Name>secupay-invoice</Name>
 				<PictureURL>secupay-rg/template/secupay_invoice.png</PictureURL>
-				<Sort>5</Sort>
+				<Sort>3</Sort>
 				<SendMail>1</SendMail>
-				<Provider>secupay.ag</Provider>
-				<TSCode>INVOICE</TSCode>
+				<Provider>secupay AG</Provider>
+                <TSCode>INVOICE</TSCode>
 				<PreOrder>1</PreOrder>
 				<Soap>0</Soap>
 				<Curl>1</Curl>
@@ -198,13 +229,18 @@
 				<ClassName>agws_secupay_flex_rg</ClassName>
 				<TemplateFile>secupay-rg/template/agws_secupay_flex_rg.tpl</TemplateFile>
 				<MethodLanguage iso="GER">
-					<Name>secupay.Rechnungskauf</Name>
-					<ChargeName>Gebühr (Zahlungsart secupay-Rechnungskauf)</ChargeName>
-					<InfoText>Sie überweisen den Rechnungsbetrag nach Erhalt und Prüfung der Ware</InfoText>
+                    <Name>secupay.Rechnungskauf</Name>
+                    <ChargeName>Aufpreis für Zahlung mit secupay-Rechnungskauf</ChargeName>
+                    <InfoText>Sie überweisen den Rechnungsbetrag nach Erhalt und Prüfung der Ware.</InfoText>
+                </MethodLanguage>
+                <MethodLanguage iso="ENG">
+					<Name>secupay.invoice</Name>
+					<ChargeName>Charge for secupay invoice</ChargeName>
+					<InfoText>You transfer the invoice amount after receiving and checking ordered goods.</InfoText>
 				</MethodLanguage>
 				<Setting type="selectbox" initialValue="2" sort="7" conf="Y">
-					<Name>Fälligkeit - Darstellung</Name>
-					<Description>Darstellungsoption für Fälligkeit im Hinweisfeld / Rechnungsdruck</Description>
+					<Name>Fälligkeits-Darstellung</Name>
+					<Description>Darstellungsoption für Fälligkeit im Hinweisfeld/Rechnungsdruck</Description>
 					<ValueName>agws_secupay_flex_rg_due_design</ValueName>
 					<SelectboxOptions>
 						<Option value = "0" sort="1">kein Hinweis</Option>
@@ -216,41 +252,147 @@
 					<Name>Fälligkeit - Anzahl Tage</Name>
 					<Description>Tage zur Berechnung der Fälligkeit</Description>
 					<ValueName>agws_secupay_flex_due_days</ValueName>
-				</Setting>	
+				</Setting>
+				<Setting type="selectbox" initialValue="2" sort="8" conf="Y">
+					<Name>Auswahl Feld Zahlungsdaten</Name>
+					<Description>Darstellungsoption für Zahlungsdaten in der Wawi Kommentar/Hinweisfeld oder Rechnungskauf-Text</Description>
+					<ValueName>agws_secupay_flex_rg_comment</ValueName>
+					<SelectboxOptions>
+						<Option value = "1" sort="1">Kommentar/Hinweisfeld</Option>
+						<Option value = "2" sort="2">Rechnungskauf-Text</Option>
+					</SelectboxOptions>
+				</Setting>
 			</Method>
+
+            <Method>
+                <Name>secupay-prepay</Name>
+                <PictureURL>secupay-pp/template/secupay_prepay.png</PictureURL>
+                <Sort>4</Sort>
+                <SendMail>1</SendMail>
+                <Provider>secupay AG</Provider>
+                 <TSCode>PREPAYMENT</TSCode>
+                <PreOrder>1</PreOrder>
+                <Soap>0</Soap>
+                <Curl>1</Curl>
+                <Sockets>0</Sockets>
+                <ClassFile>secupay-pp/agws_secupay_flex_pp.class.php</ClassFile>
+                <ClassName>agws_secupay_flex_pp</ClassName>
+                <TemplateFile>secupay-pp/template/agws_secupay_flex_pp.tpl</TemplateFile>
+                <MethodLanguage iso="GER">
+                    <Name>secupay.Vorkasse</Name>
+                    <ChargeName>Aufpreis für Zahlung mit secupay-Vorkasse</ChargeName>
+                    <InfoText>Sie zahlen vorab und erhalten Ihre bestellte Ware nach Zahlungseingang.</InfoText>
+                </MethodLanguage>
+                <MethodLanguage iso="ENG">
+                    <Name>secupay.prepay</Name>
+                    <ChargeName>Charge for secupay prepay</ChargeName>
+                    <InfoText>You transfer in advance and get your ordered goods after money is received.</InfoText>
+                </MethodLanguage>
+                <Setting type="selectbox" initialValue="2" sort="7" conf="Y">
+                    <Name>Fälligkeit - Darstellung</Name>
+                    <Description>Darstellungsoption für Fälligkeit im Hinweisfeld/Rechnungsdruck</Description>
+                    <ValueName>agws_secupay_flex_pp_due_design</ValueName>
+                    <SelectboxOptions>
+                        <Option value = "0" sort="1">kein Hinweis</Option>
+                        <Option value = "1" sort="2">Zahlbar X Tage nach Rechnungserhalt.</Option>
+                        <Option value = "2" sort="3">Versand erst nach Zahlungseingang.</Option>
+                    </SelectboxOptions>
+                </Setting>
+                <Setting type="text" initialValue="10" sort="8" conf="Y">
+                    <Name>Fälligkeit - Anzahl Tage</Name>
+                    <Description>Tage zur Berechnung der Fälligkeit</Description>
+                    <ValueName>agws_secupay_flex_due_days_pp</ValueName>
+                </Setting>
+                <Setting type="selectbox" initialValue="2" sort="8" conf="Y">
+                    <Name>Auswahl Feld Zahlungsdaten</Name>
+                    <Description>Darstellungsoption für Zahlungsdaten in der Wawi Kommentar/Hinweisfeld oder Rechnungsdruck</Description>
+                    <ValueName>agws_secupay_flex_pp_comment</ValueName>
+                    <SelectboxOptions>
+                        <Option value = "1" sort="1">Kommentar/Hinweisfeld</Option>
+                        <Option value = "2" sort="2">Vorkasse-Text</Option>
+                    </SelectboxOptions>
+                </Setting>
+            </Method>
+
+            <Method>
+                <Name>secupay-sofort</Name>
+                <PictureURL>secupay-sk/template/secupay_sofort.png</PictureURL>
+                <Sort>5</Sort>
+                <SendMail>1</SendMail>
+                <Provider>secupay AG</Provider>
+                 <TSCode>DIRECT_E_BANKING</TSCode>
+                <PreOrder>1</PreOrder>
+                <Soap>0</Soap>
+                <Curl>1</Curl>
+                <Sockets>0</Sockets>
+                <ClassFile>secupay-sk/agws_secupay_flex_sk.class.php</ClassFile>
+                <ClassName>agws_secupay_flex_sk</ClassName>
+                <TemplateFile>secupay-sk/template/agws_secupay_flex_sk.tpl</TemplateFile>
+                <MethodLanguage iso="GER">
+                    <Name>secupay.Sofort</Name>
+                    <ChargeName>Aufpreis für Zahlung mit SOFORT-Überweisung</ChargeName>
+                    <InfoText>Einfach und direkt bezahlen per Online Banking.</InfoText>
+                </MethodLanguage>
+                <MethodLanguage iso="ENG">
+                    <Name>secupay.paynow</Name>
+                    <ChargeName>Charge for Pay now! payments</ChargeName>
+                    <InfoText>You pay easily and directly with online banking.</InfoText>
+                </MethodLanguage>
+                <Setting type="selectbox" initialValue="2" sort="8" conf="Y">
+                    <Name>Auswahl Feld Zahlungsdaten</Name>
+                    <Description>Darstellungsoption für Zahlungsdaten in der Wawi Kommentar/Hinweisfeld oder Rechnungsdruck</Description>
+                    <ValueName>agws_secupay_flex_sk_comment</ValueName>
+                    <SelectboxOptions>
+                        <Option value = "1" sort="1">Kommentar/Hinweisfeld</Option>
+                        <Option value = "2" sort="2">Sofortüberweisung-Text</Option>
+                    </SelectboxOptions>
+                </Setting>
+            </Method>
 		</PaymentMethod>
 
 		<Locales>
 			<Variable>
-			<Name>agws_secupay_flex_loc_global_abwLA_titel</Name>
-			<Description>abweichende Lieferanschrift - Titel</Description>
-			<VariableLocalized iso="GER">Hinweis:</VariableLocalized>
+				<Name>agws_secupay_flex_loc_global_abwLA_titel</Name>
+				<Description>abweichende Lieferanschrift - Titel</Description>
+                <VariableLocalized iso="GER">Hinweis:</VariableLocalized>
+				<VariableLocalized iso="ENG">Hint:</VariableLocalized>
 			</Variable>
 			<Variable>
-			<Name>agws_secupay_flex_loc_global_abwLA_text</Name>
-			<Description>abweichende Lieferanschrift - Text</Description>
-			<VariableLocalized iso="GER">Lieferung erfolgt nur an Ihre Rechnungsanschrift!</VariableLocalized>
+				<Name>agws_secupay_flex_loc_global_abwLA_text</Name>
+				<Description>abweichende Lieferanschrift - Text</Description>
+                <VariableLocalized iso="GER">Lieferung erfolgt nur an Ihre Rechnungsanschrift!</VariableLocalized>
+				<VariableLocalized iso="ENG">Delivery only to the address of invoice!</VariableLocalized>
 			</Variable>
 			<Variable>
-			<Name>agws_secupay_flex_loc_global_auth_pending</Name>
-			<Description>Text für nicht-bestätigte Authorisierung</Description>
-			<VariableLocalized iso="GER">Authorisierung (ausstehend)</VariableLocalized>
+				<Name>agws_secupay_flex_loc_global_auth_pending</Name>
+				<Description>Text für nicht-bestätigte Autorisierung</Description>
+                <VariableLocalized iso="GER">Autorisierung (ausstehend)</VariableLocalized>
+				<VariableLocalized iso="ENG">Authorization (pending)</VariableLocalized>
 			</Variable>
 			<Variable>
-			<Name>agws_secupay_flex_loc_global_auth_accept</Name>
-			<Description>Text für bestätigte Authorisierung</Description>
-			<VariableLocalized iso="GER">Authorisierung (bestätigt)</VariableLocalized>
+				<Name>agws_secupay_flex_loc_global_auth_accept</Name>
+				<Description>Text für bestätigte Autorisierung</Description>
+                <VariableLocalized iso="GER">Autorisierung (bestätigt)</VariableLocalized>
+				<VariableLocalized iso="ENG">Authorization (confirmed)</VariableLocalized>
 			</Variable>
 			<Variable>
-			<Name>agws_secupay_flex_loc_invoice_due_text</Name>
-			<Description>Text für Fälligkeitshinweis</Description>
-			<VariableLocalized iso="GER"><![CDATA[Gesamtbetrag fällig am: |t|]]></VariableLocalized>
-			</Variable>
+				<Name>agws_secupay_flex_loc_invoice_due_text</Name>
+                <Description>Text für Fälligkeitshinweis (Datum)</Description>
+                <VariableLocalized iso="GER"><![CDATA[Gesamtbetrag fällig am: |t|. ]]></VariableLocalized>
+                <VariableLocalized iso="ENG"><![CDATA[Total amount payable on: |t|. ]]></VariableLocalized>
+            </Variable>
+            <Variable>
+                <Name>agws_secupay_flex_loc_invoice_due_text_days</Name>
+                <Description>Text für Fälligkeitshinweis (Tage)</Description>
+                <VariableLocalized iso="GER"><![CDATA[Gesamtbetrag fällig |t| Tage nach Lieferung. ]]></VariableLocalized>
+                <VariableLocalized iso="ENG"><![CDATA[Total amount payable |t| days after delivery. ]]></VariableLocalized>
+            </Variable>
+
 		</Locales>
 
 		<Emailtemplate>
 	        	<Template>
-		                <Name>secupay - Zahlungsauthorisierung</Name>
+		                <Name>secupay - Zahlungsautorisierung</Name>
 				<Description></Description>
 		                <Type>text/html</Type>
                 		<ModulId>agwssecupayflex</ModulId>
@@ -259,12 +401,12 @@
 				<AGB>1</AGB>
 				<WRB>1</WRB>
                 		<TemplateLanguage iso="GER">
-		                	<Subject>Zahlungsauthorisierung Ihrer Bestellung #bestellung.bestellnr# vom #bestellung.erstelldatum_de# bei #firma.name# ist eingegangen</Subject>
-			                	<ContentHtml>
-							<![CDATA[
+                            <Subject>Zahlungsautorisierung Ihrer Bestellung #bestellung.bestellnr# vom #bestellung.erstelldatum_de# bei #firma.name# ist eingegangen.</Subject>
+                                <ContentHtml>
+                            <![CDATA[
 Sehr {if $oPluginMail->tkunde->cAnrede=="w"}geehrte{else}geehrter{/if} {$oPluginMail->tkunde->cAnredeLocalized} {$oPluginMail->tkunde->cNachname},<br>
 <br>
-die von Ihnen ausgewählte Zahlungsart {$oPluginMail->tbestellung->cZahlungsartName} wurde durch die secupay AG authorisiert.<br>
+die von Ihnen ausgewählte Zahlungsart {$oPluginMail->tbestellung->cZahlungsartName} wurde durch die secupay AG autorisiert.<br>
 <br>
 <br>
 {if $oPluginMail->tbestellung->Zahlungsart->cModulId|strpos:"secupaydebit" !== false}
@@ -360,12 +502,12 @@ Mit freundlichen Grüßen<br>
 <br>
 Ihr Team von {$Firma->cName}
 ]]>
-			                	</ContentHtml>
-			                	<ContentText>
+                                </ContentHtml>
+                                <ContentText>
                         <![CDATA[
 Sehr {if $oPluginMail->tkunde->cAnrede=="w"}geehrte{else}geehrter{/if} {$oPluginMail->tkunde->cAnredeLocalized} {$oPluginMail->tkunde->cNachname},
 
-die von Ihnen ausgewählte Zahlungsart {$oPluginMail->tbestellung->cZahlungsartName} wurde durch die secupay AG authorisiert.
+die von Ihnen ausgewählte Zahlungsart {$oPluginMail->tbestellung->cZahlungsartName} wurde durch die secupay AG autorisiert.
 
 
 {if $oPluginMail->tbestellung->Zahlungsart->cModulId|strpos:"secupaydebit" !== false}
@@ -399,6 +541,149 @@ Um diese Rechnung bequem online zu zahlen, nutzen Sie bitte diese URL: {$oPlugin
 Mit freundlichen Grüßen
 
 Ihr Team von {$Firma->cName}
+]]>
+                            </ContentText>
+                        </TemplateLanguage>
+                        <TemplateLanguage iso="ENG">
+		                	<Subject>Payment confirmation of your order #bestellung.bestellnr# from #bestellung.erstelldatum_de# at #firma.name# is received.</Subject>
+			                	<ContentHtml>
+							<![CDATA[
+Dear {if $oPluginMail->tkunde->cAnrede=="w"}Ms.{else}Mr.{/if} {$oPluginMail->tkunde->cAnredeLocalized} {$oPluginMail->tkunde->cNachname},<br>
+<br>
+your chosen payment method {$oPluginMail->tbestellung->cZahlungsartName} was authorized by secupay AG.<br>
+<br>
+<br>
+{if $oPluginMail->tbestellung->Zahlungsart->cModulId|strpos:"secupaydebit" !== false}
+The secupay AG will debit shortly your given bank account with the total amount of your order of {$oPluginMail->tbestellung->WarensummeLocalized[0]}.
+{elseif $oPluginMail->tbestellung->Zahlungsart->cModulId|strpos:"secupaycredit" !== false}
+The secupay AG will debit shortly your given credit card account with the total amount of your order of {$oPluginMail->tbestellung->WarensummeLocalized[0]}.
+{elseif $oPluginMail->tbestellung->Zahlungsart->cModulId|strpos:"secupayinvoice" !== false}
+{if $oPluginMail->tsecupay->faelligkeit != ""}<b>{$oPluginMail->tsecupay->faelligkeit}</b><br>
+<br>{/if}
+The invoice amount was assigned to {$oPluginMail->tsecupay->recipient_legal}.<br>
+<br>
+<br>
+<b>Payment with the effect of discharging the debt is only effective to the following bank account:</b><br>
+<br>
+<br>
+Beneficiary: {$oPluginMail->tsecupay->accountowner}<br>
+Account number: {$oPluginMail->tsecupay->ktonr}<br>
+Bank code: {$oPluginMail->tsecupay->blz}<br>
+Bank: {$oPluginMail->tsecupay->bank}<br>
+IBAN: {$oPluginMail->tsecupay->iban}<br>
+BIC: {$oPluginMail->tsecupay->bic}<br>
+<brReference: {$oPluginMail->tsecupay->zweck}</b><br>
+<br>
+<br>
+To pay comfortably this invoice online you can scan the QR-Code with a smart phone<br>
+<br>
+<p><img src="{$oPluginMail->tsecupay->qrcodelink}" alt="secupay-qrimage"></p>
+<br>
+or you use this URL: <a href="{$oPluginMail->tsecupay->urllink}">{$oPluginMail->tsecupay->urllink}</a>
+{/if}
+<br>
+<br>
+<br>
+Following you get an overview about your order again: <br>
+<br>
+{foreach name=pos from=$oPluginMail->tbestellung->Positionen item=Position}
+   <table width="600" border="0" cellspacing="0" cellpadding="0" style="padding-top:11px;border-color:#929292;border-width:1px; border-style:dotted;border-top-width:0px;border-right-width:0px;border-left-width:0px;">
+      <tr>
+         <td valign="top" style="padding-bottom:5px;">
+            {if $Position->nPosTyp==1}
+               <b>{$Position->cName}</b><br>
+               {foreach name=variationen from=$Position->WarenkorbPosEigenschaftArr item=WKPosEigenschaft}
+                  <br><span class="standard"><b>{$WKPosEigenschaft->cEigenschaftName}</b>: {$WKPosEigenschaft->cEigenschaftWertName}</span>
+               {/foreach}
+            {else}
+               <span class="bluenormal">{$Position->cName}</span>
+            {/if}
+         </td>
+         <td width="50" style="padding-left:2px;" valign="top">
+            <span class="standard">{$Position->nAnzahl}</span>
+         </td>
+         <td width="90" style="padding-left:2px;" align="right" valign="top">
+            <span class="standard">{$Position->cGesamtpreisLocalized[$NettoPreise]}</span>
+         </td>
+      </tr>
+   </table>
+{/foreach}
+<table width="600" border="0" cellspacing="0" cellpadding="0" style="padding-top:11px;border-color:#929292;border-width:1px; border-style:dotted;border-top-width:0px;border-right-width:0px;border-left-width:0px;">
+   {foreach name=steuerpositionen from=$oPluginMail->tbestellung->Steuerpositionen item=Steuerposition}
+      <tr>
+         <td valign="top" align="right" style="padding-bottom:5px;padding-top:4px;padding-right:8px;">
+            <span class="standard">{$Steuerposition->cName}:</span>
+         </td>
+         <td width="90"  style="padding-bottom:5px;padding-top:4px;padding-right:8px;" align="right" valign="top">
+            <span class="standard">{$Steuerposition->cPreisLocalized}</span>
+         </td>
+      </tr>
+   {/foreach}
+   {if $GuthabenNutzen==1}
+      <tr>
+         <td valign="top" align="right" style="padding-bottom:5px;padding-top:11px;">
+            <span class="standard"><b>Voucher:</b></span>
+         </td>
+         <td width="90" style="padding-bottom:5px;padding-top:11px;" align="right" valign="top">
+            <span class="standard"><b>-{$GutscheinLocalized}</b></span>
+         </td>
+      </tr>
+   {/if}
+   <tr>
+      <td valign="top" align="right"  style="padding-bottom:5px;padding-top:4px;padding-right:8px;font-size: 18px;">
+         <span class="standard"><b>Total amount:</b></span>
+      </td>
+      <td width="90" style="padding-bottom:5px;padding-top:4px;padding-right:8px; font-size: 18px;" align="right" valign="top">
+         <span class="standard"><b>{$oPluginMail->tbestellung->WarensummeLocalized[0]}</b></span>
+      </td>
+   </tr>
+</table><br>
+<br>
+You will receive additional information when shipping your ordered goods.<br>
+<br>
+Sincerely yours,<br>
+<br>
+Your team from {$Firma->cName}
+]]>
+			                	</ContentHtml>
+			                	<ContentText>
+                        <![CDATA[
+Dear {if $oPluginMail->tkunde->cAnrede=="w"}Ms.{else}Mr.{/if} {$oPluginMail->tkunde->cAnredeLocalized} {$oPluginMail->tkunde->cNachname},
+
+your chosen payment method {$oPluginMail->tbestellung->cZahlungsartName} was authorized by secupay AG.
+
+
+{if $oPluginMail->tbestellung->Zahlungsart->cModulId|strpos:"secupaydebit" !== false}
+The secupay AG will debit shortly your given bank account with the total amount of your order of {$oPluginMail->tbestellung->WarensummeLocalized[0]}.
+{elseif $oPluginMail->tbestellung->Zahlungsart->cModulId|strpos:"secupaycredit" !== false}
+The secupay AG will debit shortly your given credit card account with the total amount of your order of {$oPluginMail->tbestellung->WarensummeLocalized[0]}.
+{elseif $oPluginMail->tbestellung->Zahlungsart->cModulId|strpos:"secupayinvoice" !== false}
+{if $oPluginMail->tsecupay->faelligkeit != ""}{$oPluginMail->tsecupay->faelligkeit}{/if}
+
+The invoice amount was assigned to {$oPluginMail->tsecupay->recipient_legal}.
+
+
+Important: Payment with the effect of discharging the debt is only effective to the following bank account:
+
+
+Beneficiary: {$oPluginMail->tsecupay->accountowner}
+Account number: {$oPluginMail->tsecupay->ktonr}
+Bank code: {$oPluginMail->tsecupay->blz}
+Bank: {$oPluginMail->tsecupay->bank}
+IBAN: {$oPluginMail->tsecupay->iban}
+BIC: {$oPluginMail->tsecupay->bic}
+
+Reference: {$oPluginMail->tsecupay->zweck}
+
+
+To pay comfortably this invoice online please use this URL: {$oPluginMail->tsecupay->urllink}
+{/if}
+
+
+
+Sincerely yours,
+
+Your team from {$Firma->cName}
 ]]>
 		                	</ContentText>
 		                </TemplateLanguage>
