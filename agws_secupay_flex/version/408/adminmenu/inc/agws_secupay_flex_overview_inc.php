@@ -19,7 +19,6 @@ function gibBestellungsUebersicht($cLimitSQL, $cSuchFilter, $cSecZA)
 
     $oBestellung_arr = array();
 
-    //$cSuchFilterSQL = " WHERE kZahlungsart IN(" . $cSecZA. ")";
     $cSuchFilterSQL = " WHERE kBestellung IN(" . $cSecZA. ")";
     if (strlen($cSuchFilter)) {
         $cSuchFilterSQL .= " AND cBestellNr LIKE '%" . $cSuchFilter . "%'";
@@ -67,7 +66,6 @@ function gibAnzahlBestellungen($cSuchFilter, $cSecZA)
     $oPlugin = Plugin::getPluginById('agws_secupay_flex');
     $helper = agwsPluginHelperSecupay::getInstance($oPlugin);
 
-    //$cSuchFilterSQL = " WHERE kZahlungsart IN(" . $cSecZA. ")";
     $cSuchFilterSQL = " WHERE kBestellung IN(" . $cSecZA. ")";
     if (strlen($cSuchFilter)) {
         $cSuchFilterSQL .= " AND cBestellNr LIKE '%" . $cSuchFilter . "%'";

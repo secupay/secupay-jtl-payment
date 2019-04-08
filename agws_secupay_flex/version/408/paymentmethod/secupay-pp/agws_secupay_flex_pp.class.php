@@ -234,7 +234,6 @@ class agws_secupay_flex_pp extends PaymentMethod
         $agws_secupay_flex_deliveryaddress->street = utf8_encode(html_entity_decode($order->Lieferadresse->cStrasse, ENT_COMPAT | ENT_HTML401, "ISO8859-1"));
         $agws_secupay_flex_deliveryaddress->housenumber = utf8_encode(html_entity_decode($order->Lieferadresse->cHausnummer, ENT_COMPAT | ENT_HTML401, "ISO8859-1"));
         $agws_secupay_flex_deliveryaddress->zip = utf8_encode(html_entity_decode($order->Lieferadresse->cPLZ, ENT_COMPAT | ENT_HTML401, "ISO8859-1"));
-        ;
         $agws_secupay_flex_deliveryaddress->city = utf8_encode(html_entity_decode($order->Lieferadresse->cOrt, ENT_COMPAT | ENT_HTML401, "ISO8859-1"));
         $agws_secupay_flex_deliveryaddress->country = utf8_encode(html_entity_decode($order->Lieferadresse->cLand, ENT_COMPAT | ENT_HTML401, "ISO8859-1"));
         
@@ -408,8 +407,8 @@ class agws_secupay_flex_pp extends PaymentMethod
                 'firstname' => utf8_encode(html_entity_decode($agws_secupay_flex_customer->cVorname, ENT_COMPAT | ENT_HTML401, "ISO8859-1")),
                 'lastname' => utf8_encode(html_entity_decode($agws_secupay_flex_customer->cNachname, ENT_COMPAT | ENT_HTML401, "ISO8859-1")),
                 'street' => utf8_encode(html_entity_decode($agws_secupay_flex_customer->cStrasse, ENT_COMPAT | ENT_HTML401, "ISO8859-1")),
-                'housenumber' => $agws_secupay_flex_customer->cHausnummer,
-                'zip' => $agws_secupay_flex_customer->cPLZ,
+                'housenumber' => utf8_encode(html_entity_decode($agws_secupay_flex_customer->cHausnummer, ENT_COMPAT | ENT_HTML401, "ISO8859-1")),
+                'zip' => utf8_encode(html_entity_decode($agws_secupay_flex_customer->cPLZ, ENT_COMPAT | ENT_HTML401, "ISO8859-1")),
                 'city' => utf8_encode(html_entity_decode($agws_secupay_flex_customer->cOrt, ENT_COMPAT | ENT_HTML401, "ISO8859-1")),
                 'country' => utf8_encode(html_entity_decode($agws_secupay_flex_customer->cLand, ENT_COMPAT | ENT_HTML401, "ISO8859-1")),
                 'telephone' => $agws_secupay_flex_customer->cTel,
@@ -424,6 +423,7 @@ class agws_secupay_flex_pp extends PaymentMethod
                 'delivery_address' => $this->agws_secupay_flex_getDeliveryAddress($order),
                 'order_id' =>'',
                 'note' =>'',
+                'module_config'=>$this->oPlugin->oPluginEinstellungAssoc_arr,
                 'apiversion' => '2.3.14'
             ]
         ];
@@ -709,9 +709,9 @@ class agws_secupay_flex_pp extends PaymentMethod
                 do {
                     $agws_secupay_flex_antwort = $this->agws_secupay_flex_getCurlContent('status', $agws_secupay_flex_http_header, $agws_secupay_flex_data);
                     $agws_secupay_flex_antwort_json = json_decode($agws_secupay_flex_antwort);
-                    $status = in_array($agws_secupay_flex_antwort_json->data->status,array('proceed','scored'));
-                    Jtllog::writeLog(print_r($agws_secupay_flex_antwort_json,true), JTLLOG_LEVEL_ERROR);
-                    Jtllog::writeLog('Count: ' .$count , JTLLOG_LEVEL_ERROR);
+                    $status = in_array($agws_secupay_flex_antwort_json->data->status, array('proceed','scored'));
+                    Jtllog::writeLog(print_r($agws_secupay_flex_antwort_json, true), JTLLOG_LEVEL_DEBUG);
+                    Jtllog::writeLog('Count: ' .$count, JTLLOG_LEVEL_DEBUG);
                     if ($status == false) {
                         sleep(1);
                     }

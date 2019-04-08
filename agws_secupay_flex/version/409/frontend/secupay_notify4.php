@@ -28,8 +28,9 @@ define('NO_MODE', 0); // 1 = An / 0 = Aus
 define('NO_PFAD', PFAD_LOGFILES . 'notify.log');
 
 //$Sprache = Shop::DB()->query("SELECT cISO FROM tsprache WHERE cShopStandard='Y'", 1);
-$Sprache             = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
-$Einstellungen = Shop::getSettings(array(CONF_GLOBAL, CONF_KUNDEN, CONF_KAUFABWICKLUNG, CONF_ZAHLUNGSARTEN));
+$Sprache             = Shop::DB()
+                           ->select('tsprache', 'cShopStandard', 'Y');
+$Einstellungen       = Shop::getSettings(array(CONF_GLOBAL, CONF_KUNDEN, CONF_KAUFABWICKLUNG, CONF_ZAHLUNGSARTEN));
 $cEditZahlungHinweis = '';
 //Session Hash
 
@@ -52,15 +53,29 @@ if (strlen($cSh) > 0) {
         writeLog(NO_PFAD, 'Session Hash: ' . $cSh, 1);
     }
     // Load from Session Hash / Session Hash starts with "_"
-    $sessionHash = substr(StringHandler::htmlentities(StringHandler::filterXSS($cSh)), 1);
-    $paymentSession = Shop::DB()->query("SELECT cSID, kBestellung FROM tzahlungsession WHERE cZahlungsID='" . $sessionHash . "'", 1);
+    $sessionHash    = substr(StringHandler::htmlentities(StringHandler::filterXSS($cSh)), 1);
+    $paymentSession = Shop::DB()
+                          ->query(
+                              "SELECT cSID, kBestellung FROM tzahlungsession WHERE cZahlungsID='" . $sessionHash . "'",
+                              1
+                          );
     if ($paymentSession === false) {
-        Jtllog::writeLog('Session Hash: ' . $cSh . ' ergab keine Bestellung aus tzahlungsession', JTLLOG_LEVEL_ERROR, false, 'Notify');
+        Jtllog::writeLog(
+            'Session Hash: ' . $cSh . ' ergab keine Bestellung aus tzahlungsession',
+            JTLLOG_LEVEL_ERROR,
+            false,
+            'Notify'
+        );
 
         die();
     }
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('Session Hash: ' . $cSh . ' ergab tzahlungsession ' . print_r($paymentSession, true), JTLLOG_LEVEL_DEBUG, false, 'Notify');
+        Jtllog::writeLog(
+            'Session Hash: ' . $cSh . ' ergab tzahlungsession ' . print_r($paymentSession, true),
+            JTLLOG_LEVEL_DEBUG,
+            false,
+            'Notify'
+        );
     }
 
     if (session_id() !== $paymentSession->cSID || !isset($_SESSION['Zahlungsart'])) {
@@ -72,7 +87,15 @@ if (strlen($cSh) > 0) {
     }
 
     if (!isset($_SESSION['Zahlungsart']) && !isset($paymentSession->kBestellung)) {
-        Jtllog::writeLog('Session Hash: ' . $cSh . ' ergab keine Zahlungsart nach Laden der Session ' . print_r($paymentSession, true), JTLLOG_LEVEL_ERROR, false, 'Notify');
+        Jtllog::writeLog(
+            'Session Hash: ' . $cSh . ' ergab keine Zahlungsart nach Laden der Session ' . print_r(
+                $paymentSession,
+                true
+            ),
+            JTLLOG_LEVEL_ERROR,
+            false,
+            'Notify'
+        );
 
         die();
     }
@@ -81,30 +104,44 @@ if (strlen($cSh) > 0) {
     // EOS Workaround für Server to Server Kommunikation
     pruefeEOSServerCom($cSh);
     Jtllog::writeLog(
-        'Session Hash: ' . $cSh . ' ergab cModulId aus Session: ' . ((isset($_SESSION['Zahlungsart']->cModulId)) ? $_SESSION['Zahlungsart']->cModulId : '---'),
+        'Session Hash: ' . $cSh . ' ergab cModulId aus Session: ' . ((isset($_SESSION['Zahlungsart']->cModulId))
+            ? $_SESSION['Zahlungsart']->cModulId : '---'),
         JTLLOG_LEVEL_DEBUG,
         false,
         'Notify'
     );
 
-    if ((!isset($paymentSession->kBestellung) || !$paymentSession->kBestellung) && $_REQUEST['payment_status'] != 'denied') {
+    if ((!isset($paymentSession->kBestellung) || !$paymentSession->kBestellung)
+        && $_REQUEST['payment_status'] != 'denied') {
         // Generate fake Order and ask PaymentMethod if order should be finalized
         $order = fakeBestellung();
         include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
-        $paymentMethod = (isset($_SESSION['Zahlungsart']->cModulId)) ? PaymentMethod::create($_SESSION['Zahlungsart']->cModulId) : null;
+        $paymentMethod = (isset($_SESSION['Zahlungsart']->cModulId)) ? PaymentMethod::create(
+            $_SESSION['Zahlungsart']->cModulId
+        ) : null;
         if (isset($paymentMethod)) {
             if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog('Session Hash: ' . $cSh . ' ergab Methode: ' . print_r($paymentMethod, true), JTLLOG_LEVEL_DEBUG, false, 'Notify');
+                Jtllog::writeLog(
+                    'Session Hash: ' . $cSh . ' ergab Methode: ' . print_r($paymentMethod, true),
+                    JTLLOG_LEVEL_DEBUG,
+                    false,
+                    'Notify'
+                );
             }
 
             $kPlugin = gibkPluginAuscModulId($_SESSION['Zahlungsart']->cModulId);
             if ($kPlugin > 0) {
-                $oPlugin = new Plugin($kPlugin);
+                $oPlugin            = new Plugin($kPlugin);
                 $GLOBALS['oPlugin'] = $oPlugin;
             }
 
             if ($paymentMethod->finalizeOrder($order, $sessionHash, $_REQUEST)) {
-                Jtllog::writeLog('Session Hash: ' . $cSh . ' ergab finalizeOrder passed', JTLLOG_LEVEL_DEBUG, false, 'Notify');
+                Jtllog::writeLog(
+                    'Session Hash: ' . $cSh . ' ergab finalizeOrder passed',
+                    JTLLOG_LEVEL_DEBUG,
+                    false,
+                    'Notify'
+                );
 
                 $order = finalisiereBestellung();
                 $session->cleanUp();
@@ -115,47 +152,54 @@ if (strlen($cSh) > 0) {
                     $_upd               = new stdClass();
                     $_upd->nBezahlt     = 1;
                     $_upd->dZeitBezahlt = 'now()';
-                    $_upd->kBestellung  = (int)$order->kBestellung;
-                    Shop::DB()->update('tzahlungsession', 'cZahlungsID', $sessionHash, $_upd);
+                    $_upd->kBestellung  = (int) $order->kBestellung;
+                    Shop::DB()
+                        ->update('tzahlungsession', 'cZahlungsID', $sessionHash, $_upd);
                     $paymentMethod->handleNotification($order, '_' . $sessionHash, $_REQUEST);
                     if ($paymentMethod->redirectOnPaymentSuccess() === true) {
                         header('Location: ' . $paymentMethod->getReturnURL($order));
                         exit();
                     }
                 }
-            } elseif ($_REQUEST['agws_sp_url']=='push') {
+            } elseif ($_REQUEST['agws_sp_url'] == 'push') {
                 Jtllog::writeLog('Abgelehte Bestellung PUSH.', JTLLOG_LEVEL_DEBUG, false, 'Notify');
                 if ($_REQUEST['payment_status'] == 'denied') {
                     $agws_secupay_flex_ackreq = 'ack=disapproved&' . http_build_query($_POST);
-                
-                    $agws_secupay_flex_logtext =
-                    'secupay_flex - function handleNotification <br />
+
+                    $agws_secupay_flex_logtext = 'secupay_flex - function handleNotification <br />
                     ackreq erfolgreich abgehlehter PUSH<br />
-                    ackreq: '. print_r($agws_secupay_flex_ackreq, true).' <br/>
+                    ackreq: ' . print_r($agws_secupay_flex_ackreq, true) . ' <br/>
                     ======================';
                     Jtllog::writeLog($agws_secupay_flex_logtext, JTLLOG_LEVEL_DEBUG);
-                
+
                     die($agws_secupay_flex_ackreq);
                 }
             } else {
-                Jtllog::writeLog('finalizeOrder failed -> zurueck zur Zahlungsauswahl.', JTLLOG_LEVEL_DEBUG, false, 'Notify');
+                Jtllog::writeLog(
+                    'finalizeOrder failed -> zurueck zur Zahlungsauswahl.',
+                    JTLLOG_LEVEL_DEBUG,
+                    false,
+                    'Notify'
+                );
                 $linkHelper = LinkHelper::getInstance();
                 if (strlen($cEditZahlungHinweis) > 0) {
-                    header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') .
-                        '?editZahlungsart=1&nHinweis=' . $cEditZahlungHinweis);
+                    header(
+                        'Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php')
+                        . '?editZahlungsart=1&nHinweis=' . $cEditZahlungHinweis
+                    );
                 } else {
-                    header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php').
-                        '?editZahlungsart=1');
+                    header(
+                        'Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') . '?editZahlungsart=1'
+                    );
                 }
             }
         }
-    } elseif ($_REQUEST['agws_sp_url']=='push' && $_REQUEST['payment_status'] == 'denied') {
+    } elseif ($_REQUEST['agws_sp_url'] == 'push' && $_REQUEST['payment_status'] == 'denied') {
         Jtllog::writeLog('Abgelehte Bestellung PUSH.', JTLLOG_LEVEL_DEBUG, false, 'Notify');
-        $agws_secupay_flex_ackreq = 'ack=approved&' . http_build_query($_POST);
-        $agws_secupay_flex_logtext =
-                'secupay_flex - function handleNotification <br />
+        $agws_secupay_flex_ackreq  = 'ack=approved&' . http_build_query($_POST);
+        $agws_secupay_flex_logtext = 'secupay_flex - function handleNotification <br />
                     ackreq erfolgreich abgehlehter PUSH<br />
-                    ackreq: '. print_r($agws_secupay_flex_ackreq, true).' <br/>
+                    ackreq: ' . print_r($agws_secupay_flex_ackreq, true) . ' <br/>
                     ======================';
         Jtllog::writeLog($agws_secupay_flex_logtext, JTLLOG_LEVEL_DEBUG);
         die($agws_secupay_flex_ackreq);
@@ -163,7 +207,12 @@ if (strlen($cSh) > 0) {
         $order = new Bestellung($paymentSession->kBestellung);
         $order->fuelleBestellung(0);
         include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
-        Jtllog::writeLog('Session Hash ' . $cSh . ' hat kBestellung. Modul ' . $order->Zahlungsart->cModulId . ' wird aufgerufen', JTLLOG_LEVEL_DEBUG, false, 'Notify');
+        Jtllog::writeLog(
+            'Session Hash ' . $cSh . ' hat kBestellung. Modul ' . $order->Zahlungsart->cModulId . ' wird aufgerufen',
+            JTLLOG_LEVEL_DEBUG,
+            false,
+            'Notify'
+        );
 
         $paymentMethod = PaymentMethod::create($order->Zahlungsart->cModulId);
         $paymentMethod->handleNotification($order, '_' . $sessionHash, $_REQUEST);
@@ -186,15 +235,17 @@ if (strlen($cPh) > 0) {
         writeLog(NO_PFAD, 'Payment Hash ' . $cPh, 1);
     }
     // Payment Hash
-    $paymentHash = Shop::DB()->escape(StringHandler::htmlentities(StringHandler::filterXSS($cPh)));
-    $paymentId   = Shop::DB()->query(
-        "SELECT ZID.kBestellung, ZA.cModulId
+    $paymentHash = Shop::DB()
+                       ->escape(StringHandler::htmlentities(StringHandler::filterXSS($cPh)));
+    $paymentId   = Shop::DB()
+                       ->query(
+                           "SELECT ZID.kBestellung, ZA.cModulId
             FROM tzahlungsid ZID
             LEFT JOIN tzahlungsart ZA
                 ON ZA.kZahlungsart = ZID.kZahlungsart
-            WHERE ZID.cId = '" . $paymentHash  . "'",
-        1
-    );
+            WHERE ZID.cId = '" . $paymentHash . "'",
+                           1
+                       );
 
     if ($paymentId === false) {
         if (NO_MODE == 1) {

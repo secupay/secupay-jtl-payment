@@ -20,7 +20,7 @@ require_once(PFAD_ROOT . PFAD_CLASSES . "class.JTL-Shop.Bestellung.php");
 require_once($oPlugin->cAdminmenuPfad . "inc/agws_secupay_flex_overview_inc.php");
 
 $oPlugin = Plugin::getPluginById('agws_secupay_flex');
-$helper = agwsPluginHelperSecupay::getInstance($oPlugin);
+$helper  = agwsPluginHelperSecupay::getInstance($oPlugin);
 
 if ($helper->isShop4()) {
     $smarty = Shop::Smarty();
@@ -29,23 +29,23 @@ if ($helper->isShop4()) {
 }
 
 $sql = "SELECT kBestellung FROM xplugin_agws_secupay_flex_tsyslog";
-($helper->isShop4() === true)?
-    $agws_secupay_flex_over1 = Shop::DB()->executeQuery($sql, 2):
-    $agws_secupay_flex_over1 = $GLOBALS['DB']->executeQuery($sql, 2);
+($helper->isShop4() === true) ? $agws_secupay_flex_over1 = Shop::DB()
+                                                               ->executeQuery($sql, 2)
+    : $agws_secupay_flex_over1 = $GLOBALS['DB']->executeQuery($sql, 2);
 
 
 foreach ($agws_secupay_flex_over1 as $obj) {
-    $cSecZA .= $obj->kBestellung.",";
+    $cSecZA .= $obj->kBestellung . ",";
 }
 
-$cHinweis = "";
-$cFehler = "";
-$cStep = "bestellungen_uebersicht";
+$cHinweis    = "";
+$cFehler     = "";
+$cStep       = "bestellungen_uebersicht";
 $cSuchFilter = "";
 
 
 // BlätterNavi Getter / Setter + SQL
-$nAnzahlProSeite = 15;
+$nAnzahlProSeite   = 15;
 $oBlaetterNaviConf = baueBlaetterNaviGetterSetter(1, $nAnzahlProSeite);
 
 // ###############
@@ -55,18 +55,16 @@ $oBlaetterNaviConf = baueBlaetterNaviGetterSetter(1, $nAnzahlProSeite);
 // Bestellung Wawi Abholung zurücksetzen
 if (verifyGPCDataInteger('zuruecksetzen') == 1) {
     switch (setzeAbgeholtZurueck($_POST['kBestellung'])) {
-        case -1:	// Alles O.K.
+        case -1:    // Alles O.K.
             $cHinweis = "Ihr markierten Bestellungen wurden erfolgreich zur&uuml;ckgesetzt.";
             break;
-        case 1:		// Array mit Keys nicht vorhanden oder leer
+        case 1:        // Array mit Keys nicht vorhanden oder leer
             $cFehler = "Fehler: Bitte markieren Sie mindestens eine Bestellung.";
             break;
         default:
             break;
     }
-}
-
-// Bestellnummer gesucht
+} // Bestellnummer gesucht
 elseif (verifyGPCDataInteger('Suche') == 1) {
     $cSuche = $helper->filter__XSS(verifyGPDataString('cSuche'));
 
@@ -84,9 +82,16 @@ elseif (verifyGPCDataInteger('Suche') == 1) {
 // Übersicht
 if ($cStep == "bestellungen_uebersicht") {
     // Baue Blätternavigation
-    $oBlaetterNaviUebersicht = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite1, gibAnzahlBestellungen($cSuchFilter, substr($cSecZA, 0, -1)), $nAnzahlProSeite);
+    $oBlaetterNaviUebersicht = baueBlaetterNavi(
+        $oBlaetterNaviConf->nAktuelleSeite1,
+        gibAnzahlBestellungen($cSuchFilter, substr($cSecZA, 0, -1)),
+        $nAnzahlProSeite
+    );
     $smarty->assign("oBlaetterNaviUebersicht", $oBlaetterNaviUebersicht);
-    $smarty->assign("oBestellung_arr", gibBestellungsUebersicht($oBlaetterNaviConf->cSQL1, $cSuchFilter, substr($cSecZA, 0, -1)));
+    $smarty->assign(
+        "oBestellung_arr",
+        gibBestellungsUebersicht($oBlaetterNaviConf->cSQL1, $cSuchFilter, substr($cSecZA, 0, -1))
+    );
 }
 
 // Error / Notice

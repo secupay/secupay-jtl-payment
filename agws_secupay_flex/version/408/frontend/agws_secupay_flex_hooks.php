@@ -57,6 +57,8 @@ if ($helper->gibSeiten__Typ() == PAGE_BESTELLVORGANG) {
                 $smarty->assign('cFehler', "<small>".$_GET['AGWS_SECUPAY_ERRORMSG']." (".$_GET['AGWS_SECUPAY_ERRORCODE'].")</small>");
             }
             break;
+        default:
+            break;
     }
 } elseif (($helper->gibSeiten__Typ() == PAGE_UNBEKANNT && isset($_GET['uid']) && $_GET['uid'] != "") || ($helper->gibSeiten__Typ() == PAGE_BESTELLSTATUS)) {
     switch ($oPlugin->nCalledHook) {
@@ -95,6 +97,8 @@ if ($helper->gibSeiten__Typ() == PAGE_BESTELLVORGANG) {
             }
 
             break;
+        default:
+            break;
     }
 } elseif ($helper->gibSeiten__Typ() == PAGE_MEINKONTO) {
     $smarty_step = $smarty->get_template_vars('step');
@@ -127,8 +131,9 @@ if ($helper->gibSeiten__Typ() == PAGE_BESTELLVORGANG) {
                         pq('div.container:eq(1) ul li:eq(1) div')->append($cTmp);
                     }
                 }
-                    
-            break;
+                break;
+            default:
+                break;
         }
     }
 }

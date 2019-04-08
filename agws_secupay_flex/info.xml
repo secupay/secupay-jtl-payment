@@ -68,6 +68,9 @@
 		<Version nr="408">
 			<CreateDate>2018-11-07</CreateDate>
 		</Version>
+		<Version nr="409">
+			<CreateDate>2019-02-19</CreateDate>
+		</Version>
 		<Hooks>
             <Hook id="19">agws_secupay_flex_hooks19.php</Hook>
 			<Hook id="140">agws_secupay_flex_hooks140.php</Hook>
@@ -168,7 +171,7 @@
 					<ChargeName>Charge for secupay credit card payment</ChargeName>
 					<InfoText>Pay easily and securely with your credit card.</InfoText>
 				</MethodLanguage>
-                <Setting type="selectbox" initialValue="2" sort="8" conf="Y">
+                <Setting type="selectbox" initialValue="1" sort="8" conf="Y">
                     <Name>Auswahl Feld Zahlungsdaten</Name>
                     <Description>Darstellungsoption für Zahlungsdaten in der Wawi Kommentar/Hinweisfeld oder Rechnungsdruck</Description>
                     <ValueName>agws_secupay_flex_kk_comment</ValueName>
@@ -203,7 +206,7 @@
 					<ChargeName>Charge for secupay debit</ChargeName>
 					<InfoText>You pay comfortably with debit.</InfoText>
 				</MethodLanguage>
-                <Setting type="selectbox" initialValue="2" sort="8" conf="Y">
+                <Setting type="selectbox" initialValue="1" sort="8" conf="Y">
                     <Name>Auswahl Feld Zahlungsdaten</Name>
                     <Description>Darstellungsoption für Zahlungsdaten in der Wawi Kommentar/Hinweisfeld oder Rechnungsdruck</Description>
                     <ValueName>agws_secupay_flex_ls_comment</ValueName>
@@ -253,7 +256,7 @@
 					<Description>Tage zur Berechnung der Fälligkeit</Description>
 					<ValueName>agws_secupay_flex_due_days</ValueName>
 				</Setting>
-				<Setting type="selectbox" initialValue="2" sort="8" conf="Y">
+				<Setting type="selectbox" initialValue="1" sort="8" conf="Y">
 					<Name>Auswahl Feld Zahlungsdaten</Name>
 					<Description>Darstellungsoption für Zahlungsdaten in der Wawi Kommentar/Hinweisfeld oder Rechnungskauf-Text</Description>
 					<ValueName>agws_secupay_flex_rg_comment</ValueName>
